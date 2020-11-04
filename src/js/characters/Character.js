@@ -2,12 +2,12 @@ import { randomNumber } from '../utils';
 
 export default class Character {
   constructor(type = 'generic') {
-    // this.attack = 0;
-    // this.defence = 0;
+    if (new.target.name === 'Character') {
+      throw new Error('Unable to create new Character. Use a subclass.');
+    }
     this.level = 1;
-    this.health = 100; // по дефолту было 50
+    this.health = 100;
     this.type = type;
-    // TODO: throw error if user use "new Character()"
   }
 
   levelUp(health = this.health) {
