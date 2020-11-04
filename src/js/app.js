@@ -14,3 +14,9 @@ const gameCtrl = new GameController(gamePlay, stateService);
 gameCtrl.init();
 
 // don't write your code here
+// import Bowman from './characters/Bowman';
+// import allowedTypes from './allowedTypes';
+// import { generateTeam } from './generators';
+
+// const team = generateTeam(allowedTypes.evil, 2, 3);
+// console.log(team);
