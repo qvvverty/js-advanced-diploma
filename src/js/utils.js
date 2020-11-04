@@ -22,3 +22,7 @@ export function calcHealthLevel(health) {
 
   return 'high';
 }
+
+export function randomNumber(max, min = 0) {
+  return Math.floor(min + Math.random() * (max + 1 - min));
+}
