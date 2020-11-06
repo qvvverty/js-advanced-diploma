@@ -1,5 +1,5 @@
 import themes from './themes';
-import Team from './Team';
+import Team, { positionedCharacters } from './Team';
 
 export default class GameController {
   constructor(gamePlay, stateService) {
@@ -16,14 +16,13 @@ export default class GameController {
     teamGood.add(1, 3);
     const teamEvil = new Team('evil');
     teamEvil.add(1, 3);
-    const allPositionedCharacters = [...teamGood.positionedMembers, ...teamEvil.positionedMembers];
-    this.gamePlay.redrawPositions(allPositionedCharacters);
+    this.gamePlay.redrawPositions(positionedCharacters);
   }
 
   addEventListeners() {
-    this.gamePlay.addCellEnterListener(this.onCellEnter);
-    this.gamePlay.addCellLeaveListener(this.onCellLeave);
-    this.gamePlay.addCellClickListener(this.onCellClick);
+    this.gamePlay.addCellEnterListener(this.onCellEnter.bind(this));
+    this.gamePlay.addCellLeaveListener(this.onCellLeave.bind(this));
+    this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
   }
 
   onCellClick(index) {
@@ -32,9 +31,19 @@ export default class GameController {
 
   onCellEnter(index) {
     // TODO: react to mouse enter
+    for (const character of positionedCharacters) {
+      if (character.position === index) {
+        this.gamePlay.showCellTooltip(`\uD83C\uDF96${character.character.level} \u2694${character.character.attack} \uD83D\uDEE1${character.character.defence} \u2764${character.character.health}`, index);
+      }
+    }
   }
 
   onCellLeave(index) {
     // TODO: react to mouse leave
+    for (const character of positionedCharacters) {
+      if (character.position === index) {
+        this.gamePlay.hideCellTooltip(index);
+      }
+    }
   }
 }
