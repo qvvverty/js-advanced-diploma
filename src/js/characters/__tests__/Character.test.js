@@ -12,6 +12,7 @@ test('Expect Character subclass to return character object without error', () =>
     health: 100,
     level: 1,
     type: 'bowman',
+    alignment: 'good',
   };
 
   const bowman = new Bowman();

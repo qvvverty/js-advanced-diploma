@@ -1,5 +1,6 @@
 import themes from './themes';
 import Team, { positionedCharacters } from './Team';
+import GamePlay from './GamePlay';
 
 export default class GameController {
   constructor(gamePlay, stateService) {
@@ -27,6 +28,16 @@ export default class GameController {
 
   onCellClick(index) {
     // TODO: react to click
+    for (const character of positionedCharacters) {
+      this.gamePlay.deselectCell(character.position);
+      if (character.position === index) {
+        if (character.character.alignment === 'good') {
+          this.gamePlay.selectCell(index);
+        } else {
+          GamePlay.showError('Unplayable character!');
+        }
+      }
+    }
   }
 
   onCellEnter(index) {
