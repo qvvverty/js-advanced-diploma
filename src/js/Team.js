@@ -8,7 +8,6 @@ export const positionedCharacters = new Set();
 export default class Team {
   constructor(alignment) {
     this.alignment = alignment;
-    this.members = [];
     this.positionedMembers = [];
     this.occupiedPositions = new Set();
   }
@@ -16,7 +15,6 @@ export default class Team {
   add(maxLevel, characterCount) {
     const team = generateTeam(allowedTypes[this.alignment], maxLevel, characterCount);
     for (const member of team) {
-      this.members.unshift(member);
       this.positionedMembers.unshift(new PositionedCharacter(member, this.getStartPosition()));
       positionedCharacters.add(this.positionedMembers[0]);
     }
