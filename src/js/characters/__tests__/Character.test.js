@@ -9,6 +9,7 @@ test('Expect Character subclass to return character object without error', () =>
   const bowmanExpected = {
     level: 1,
     move: 2,
+    attackRange: 2,
     attack: 25,
     defence: 25,
     health: 100,

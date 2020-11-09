@@ -5,6 +5,7 @@ export default class Daemon extends Character {
     super(type);
     this.getStartLevel(level);
     this.move = 1;
+    this.attackRange = 4;
     this.attack = 10;
     this.defence = 40;
     this.alignment = 'evil';

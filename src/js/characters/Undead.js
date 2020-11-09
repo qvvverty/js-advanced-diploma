@@ -5,6 +5,7 @@ export default class Undead extends Character {
     super(type);
     this.getStartLevel(level);
     this.move = 4;
+    this.attackRange = 1;
     this.attack = 40;
     this.defence = 10;
     this.alignment = 'evil';
