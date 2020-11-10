@@ -53,6 +53,11 @@ export function calcAvailableMoves(character) {
   return availableMoves;
 }
 
+export function calcAttackRange(character) {
+  const attackRange = [];
+  const range = character.character.attackRange;
+}
+
 export function calcHealthLevel(health) {
   if (health < 15) {
     return 'critical';
