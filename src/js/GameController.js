@@ -2,7 +2,7 @@ import themes from './themes';
 import Team, { positionedCharacters } from './Team';
 import GamePlay from './GamePlay';
 // import GameState, { gameState } from './GameState';
-import { calcAvailableMoves } from './utils';
+import { calcAvailableMoves, calcAttackRange } from './utils';
 
 export default class GameController {
   constructor(gamePlay, stateService) {
@@ -16,6 +16,7 @@ export default class GameController {
   set selectedCharacter(character) {
     this.activeCharacter = character;
     this.availableMoves = calcAvailableMoves(character);
+    this.attackRange = calcAttackRange(character);
   }
 
   get selectedCharacter() {

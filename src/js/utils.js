@@ -56,6 +56,34 @@ export function calcAvailableMoves(character) {
 export function calcAttackRange(character) {
   const attackRange = [];
   const range = character.character.attackRange;
+  const { position } = character;
+
+  const horizontalRange = [];
+  for (let i = position - range; i <= position + range; i += 1) {
+    horizontalRange.push(i);
+  }
+
+  // eslint-disable-next-line max-len
+  for (let i = horizontalRange.indexOf(position), k = i; (i >= 0, k < horizontalRange.length); i -= 1, k += 1) {
+    if (horizontalRange[i] % 8 === 0) {
+      horizontalRange.splice(0, i);
+      break;
+    }
+    if (horizontalRange[k] % 8 === 7) {
+      horizontalRange.splice(k + 1, horizontalRange.length);
+      break;
+    }
+  }
+
+  for (const attackPosition of horizontalRange) {
+    for (let i = attackPosition - 8 * range; i <= attackPosition + 8 * range; i += 8) {
+      attackRange.push(i);
+    }
+  }
+
+  attackRange.splice(attackRange.indexOf(position), 1);
+
+  return attackRange;
 }
 
 export function calcHealthLevel(health) {
