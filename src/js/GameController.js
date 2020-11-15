@@ -14,8 +14,17 @@ export default class GameController {
   }
 
   set selectedCharacter(character) {
+    if (this.activeCharacter) {
+      this.gamePlay.deselectCell(this.activeCharacter.position);
+    }
     this.activeCharacter = character;
     this.availableMoves = calcAvailableMoves(character);
+    for (const char of positionedCharacters) {
+      const occupiedIndex = this.availableMoves.indexOf(char.position);
+      if (occupiedIndex > -1) {
+        this.availableMoves.splice(occupiedIndex, 1);
+      }
+    }
     this.attackRange = calcAttackRange(character);
   }
 
@@ -41,6 +50,15 @@ export default class GameController {
     this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
   }
 
+  static charOn(position) {
+    for (const character of positionedCharacters) {
+      if (character.position === position) {
+        return character;
+      }
+    }
+    return null;
+  }
+
   onCellClick(index) {
     // TODO: react to click
     for (const character of positionedCharacters) {
@@ -57,22 +75,29 @@ export default class GameController {
 
   onCellEnter(index) {
     // TODO: react to mouse enter
+    for (const character of positionedCharacters) {
+      if (character.position === index) {
+        this.gamePlay.showCellTooltip(`\uD83C\uDF96${character.character.level} \u2694${character.character.attack} \uD83D\uDEE1${character.character.defence} \u2764${character.character.health}`, index);
+        if (character.character.alignment === 'good') {
+          this.gamePlay.setCursor('pointer');
+        } else {
+          this.gamePlay.setCursor('not-allowed');
+        }
+      }
+    }
+
     if (this.selectedCharacter) {
       if (this.availableMoves.includes(index)) {
         this.gamePlay.setCursor('pointer');
         this.gamePlay.selectCell(index, 'green');
-      } else {
-        this.gamePlay.setCursor('not-allowed');
       }
-    }
-
-    for (const character of positionedCharacters) {
-      if (character.position === index) {
-        this.gamePlay.showCellTooltip(`\uD83C\uDF96${character.character.level} \u2694${character.character.attack} \uD83D\uDEE1${character.character.defence} \u2764${character.character.health}`, index);
-        // if (character.character.alignment === 'evil') {
-        //   this.gamePlay.setCursor('not-allowed');
-        // }
+      for (const character of positionedCharacters) {
+        if (character.position === index && character.character.alignment !== this.selectedCharacter.character.alignment && this.attackRange.includes(character.position)) {
+          this.gamePlay.setCursor('crosshair');
+          this.gamePlay.selectCell(index, 'red');
+        }
       }
+      // this.gamePlay.setCursor('not-allowed');
     }
   }
 
