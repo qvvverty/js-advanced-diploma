@@ -61,6 +61,14 @@ export default class GameController {
 
   onCellClick(index) {
     // TODO: react to click
+    if (this.activeCharacter) {
+      if (this.availableMoves.includes(index)) {
+        this.gamePlay.deselectCell(this.activeCharacter.position);
+        this.activeCharacter.position = index;
+        this.gamePlay.redrawPositions(positionedCharacters);
+      }
+    }
+
     for (const character of positionedCharacters) {
       if (character.position === index) {
         if (character.character.alignment === 'good') {
