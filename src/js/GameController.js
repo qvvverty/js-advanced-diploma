@@ -13,11 +13,7 @@ export default class GameController {
     this.attackRange = [];
   }
 
-  set selectedCharacter(character) {
-    if (this.activeCharacter) {
-      this.gamePlay.deselectCell(this.activeCharacter.position);
-    }
-    this.activeCharacter = character;
+  getFields(character) {
     this.availableMoves = calcAvailableMoves(character);
     for (const char of positionedCharacters) {
       const occupiedIndex = this.availableMoves.indexOf(char.position);
@@ -26,6 +22,14 @@ export default class GameController {
       }
     }
     this.attackRange = calcAttackRange(character);
+  }
+
+  set selectedCharacter(character) {
+    if (this.activeCharacter) {
+      this.gamePlay.deselectCell(this.activeCharacter.position);
+    }
+    this.activeCharacter = character;
+    this.getFields(character);
   }
 
   get selectedCharacter() {
@@ -66,16 +70,25 @@ export default class GameController {
         this.gamePlay.deselectCell(this.activeCharacter.position);
         this.activeCharacter.position = index;
         this.gamePlay.redrawPositions(positionedCharacters);
+        this.getFields(this.activeCharacter);
+      }
+
+      const charOnCell = GameController.charOn(index);
+      if (charOnCell) {
+        charOnCell.character.health -= Math.max(this.activeCharacter.character.attack - charOnCell.character.defence, this.activeCharacter.character.attack * 0.1);
+        this.gamePlay.redrawPositions(positionedCharacters);
       }
     }
 
-    for (const character of positionedCharacters) {
-      if (character.position === index) {
-        if (character.character.alignment === 'good') {
-          this.selectedCharacter = character;
-          this.gamePlay.selectCell(index);
-        } else {
-          GamePlay.showError('Unplayable character!');
+    if (!this.activeCharacter) {
+      for (const character of positionedCharacters) {
+        if (character.position === index) {
+          if (character.character.alignment === 'good') {
+            this.selectedCharacter = character;
+            this.gamePlay.selectCell(index);
+          } else {
+            GamePlay.showError('Unplayable character!');
+          }
         }
       }
     }
