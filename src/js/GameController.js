@@ -74,9 +74,13 @@ export default class GameController {
       }
 
       const charOnCell = GameController.charOn(index);
-      if (charOnCell) {
+      if (charOnCell && charOnCell.character.alignment === 'evil' && this.attackRange.includes(charOnCell.position)) {
+        // eslint-disable-next-line max-len
         charOnCell.character.health -= Math.max(this.activeCharacter.character.attack - charOnCell.character.defence, this.activeCharacter.character.attack * 0.1);
         this.gamePlay.redrawPositions(positionedCharacters);
+      } else {
+        this.gamePlay.deselectCell(this.activeCharacter.position);
+        this.activeCharacter = null;
       }
     }
 
@@ -113,6 +117,7 @@ export default class GameController {
         this.gamePlay.selectCell(index, 'green');
       }
       for (const character of positionedCharacters) {
+        // eslint-disable-next-line max-len
         if (character.position === index && character.character.alignment !== this.selectedCharacter.character.alignment && this.attackRange.includes(character.position)) {
           this.gamePlay.setCursor('crosshair');
           this.gamePlay.selectCell(index, 'red');
