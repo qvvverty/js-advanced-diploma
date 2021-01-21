@@ -3,11 +3,14 @@ import Team, { positionedCharacters } from './Team';
 import GamePlay from './GamePlay';
 // import GameState, { gameState } from './GameState';
 import { calcAvailableMoves, calcAttackRange } from './utils';
+// import GameState from './GameState';
 
 export default class GameController {
   constructor(gamePlay, stateService) {
     this.gamePlay = gamePlay;
     this.stateService = stateService;
+    // this.gameState = new GameState();
+
     this.activeCharacter = null;
     this.availableMoves = [];
     this.attackRange = [];
@@ -63,7 +66,7 @@ export default class GameController {
     return null;
   }
 
-  onCellClick(index) {
+  async onCellClick(index) {
     // TODO: react to click
     if (this.activeCharacter) {
       if (this.availableMoves.includes(index)) {
@@ -76,8 +79,10 @@ export default class GameController {
       const charOnCell = GameController.charOn(index);
       if (charOnCell && charOnCell.character.alignment === 'evil' && this.attackRange.includes(charOnCell.position)) {
         // eslint-disable-next-line max-len
-        charOnCell.character.health -= Math.max(this.activeCharacter.character.attack - charOnCell.character.defence, this.activeCharacter.character.attack * 0.1);
+        const damage = Math.max(this.activeCharacter.character.attack - charOnCell.character.defence, this.activeCharacter.character.attack * 0.1);
+        charOnCell.character.health -= damage;
         this.gamePlay.redrawPositions(positionedCharacters);
+        await this.gamePlay.showDamage(charOnCell.position, damage);
       } else {
         this.gamePlay.deselectCell(this.activeCharacter.position);
         this.activeCharacter = null;
