@@ -26,8 +26,12 @@ export default class Character {
     }
   }
 
-  // с этим пока неясно
-  // damage(points) {
-  //   if (this.health > 0) this.health -= points * (1 - this.defence / 100);
-  // }
+  charge(targetCharacter) {
+    // if (this.health > 0) this.health -= points * (1 - this.defence / 100);
+    // eslint-disable-next-line max-len
+    const damage = Math.max(this.attack - targetCharacter.character.defence, this.attack * 0.1);
+    // eslint-disable-next-line no-param-reassign
+    targetCharacter.character.health -= damage;
+    return damage;
+  }
 }

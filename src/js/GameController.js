@@ -4,6 +4,7 @@ import GamePlay from './GamePlay';
 // import GameState, { gameState } from './GameState';
 import { calcAvailableMoves, calcAttackRange } from './utils';
 // import GameState from './GameState';
+import AI from './AI';
 
 export default class GameController {
   constructor(gamePlay, stateService) {
@@ -28,10 +29,16 @@ export default class GameController {
   }
 
   set selectedCharacter(character) {
+    if (character === null) {
+      this.activeCharacter = null;
+      return;
+    }
+
     if (this.activeCharacter) {
       this.gamePlay.deselectCell(this.activeCharacter.position);
     }
     this.activeCharacter = character;
+    this.gamePlay.selectCell(character.position);
     this.getFields(character);
   }
 
@@ -44,10 +51,12 @@ export default class GameController {
     // TODO: load saved stated from stateService
     this.gamePlay.drawUi(themes.prairie);
     this.addEventListeners();
-    const teamGood = new Team('good');
-    teamGood.add(1, 3);
-    const teamEvil = new Team('evil');
-    teamEvil.add(1, 3);
+    this.teamGood = new Team('good');
+    this.teamGood.add(1, 3);
+    this.teamEvil = new Team('evil');
+    this.teamEvil.add(1, 3);
+    this.ai = new AI(this.teamEvil, this.teamGood);
+
     this.gamePlay.redrawPositions(positionedCharacters);
   }
 
@@ -68,6 +77,39 @@ export default class GameController {
 
   async onCellClick(index) {
     // TODO: react to click
+    const charOnCell = GameController.charOn(index);
+    if (this.selectedCharacter) {
+      if (charOnCell) {
+        if (charOnCell.character.alignment === 'good') {
+          this.selectedCharacter = charOnCell;
+        } else if (charOnCell.character.alignment === 'evil') {
+          if (this.attackRange.includes(charOnCell.position)) {
+            const damageDone = this.selectedCharacter.character.charge(charOnCell);
+            this.gamePlay.redrawPositions(positionedCharacters);
+            await this.gamePlay.showDamage(charOnCell.position, damageDone);
+
+            // this.ai.makeMove();
+          } else {
+            GamePlay.showError('Unplayable character!');
+          }
+        }
+      } else if (this.availableMoves.includes(index)) {
+        this.gamePlay.deselectCell(this.selectedCharacter.position);
+        this.selectedCharacter.position = index;
+        this.gamePlay.deselectCell(index);
+        this.gamePlay.redrawPositions(positionedCharacters);
+
+        this.selectedCharacter = null;
+
+        // this.ai.makeMove();
+      }
+    } else {
+      this.selectedCharacter = charOnCell;
+    }
+  }
+
+  /* async onCellClick(index) {
+    // TODO: react to click
     if (this.activeCharacter) {
       if (this.availableMoves.includes(index)) {
         this.gamePlay.deselectCell(this.activeCharacter.position);
@@ -78,11 +120,11 @@ export default class GameController {
 
       const charOnCell = GameController.charOn(index);
       if (charOnCell && charOnCell.character.alignment === 'evil' && this.attackRange.includes(charOnCell.position)) {
-        // eslint-disable-next-line max-len
-        const damage = Math.max(this.activeCharacter.character.attack - charOnCell.character.defence, this.activeCharacter.character.attack * 0.1);
-        charOnCell.character.health -= damage;
+        // const damage = Math.max(this.activeCharacter.character.attack - charOnCell.character.defence, this.activeCharacter.character.attack * 0.1);
+        // charOnCell.character.health -= damage;
+        const damageDone = this.activeCharacter.character.charge(charOnCell);
         this.gamePlay.redrawPositions(positionedCharacters);
-        await this.gamePlay.showDamage(charOnCell.position, damage);
+        await this.gamePlay.showDamage(charOnCell.position, damageDone);
       } else {
         this.gamePlay.deselectCell(this.activeCharacter.position);
         this.activeCharacter = null;
@@ -101,7 +143,7 @@ export default class GameController {
         }
       }
     }
-  }
+  } */
 
   onCellEnter(index) {
     // TODO: react to mouse enter
